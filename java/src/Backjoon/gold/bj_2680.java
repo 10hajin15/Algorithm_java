@@ -26,24 +26,32 @@ public class bj_2680 {
             // 2. 데이터 코드 판단
             int idx = 0;
             while (idx < temp.length()) {
-                if (idx + 4 > temp.length()) break;
                 String mode = temp.substring(idx, idx += 4);
+
                 if (mode.equals("0001")) {
-                    if (idx + 10 > temp.length()) break;
                     String codeCntStr = temp.substring(idx, idx += 10);
                     int codeCntInt = Integer.parseInt(codeCntStr, 2);
                     chrCnt += codeCntInt;
 
-                    int strBitsLen = (codeCntInt / 3) * 10 + (codeCntInt % 3 == 2 ? 7 : (codeCntInt % 3 == 1 ? 4 : 0));
-                    if (idx + strBitsLen > temp.length()) break;
+                    int strBitsLen = (codeCntInt / 3) * 10 + (codeCntInt % 3 == 2 ? 7 : 4);
                     String modeStr = temp.substring(idx, idx += strBitsLen);
 
                     int k;
                     for (k = 0; k + 10 <= modeStr.length(); k += 10) {
-                        ans.append(Integer.parseInt(modeStr.substring(k, k + 10), 2));
+                        int decoding = Integer.parseInt(modeStr.substring(k, k + 10), 2);
+                        ans.append(String.format("%3s", decoding).replace(' ', '0'));
                     }
                     if (k < modeStr.length()) {
-                        ans.append(Integer.parseInt(modeStr.substring(k), 2));
+                        int decoding = Integer.parseInt(modeStr.substring(k), 2);
+                        int formatCnt = (codeCntInt%3)-Integer.toString(decoding).length();
+
+                        if (formatCnt > 0) {
+                            String format = "%" +formatCnt+"s";
+                            ans.append(String.format(format, decoding).replace(' ', '0'));
+                        } else {
+                            ans.append(decoding);
+                        }
+
                     }
                 } else if (mode.equals("0010")) {
                     String[] alphLst = {
@@ -52,13 +60,11 @@ public class bj_2680 {
                             " ", "$", "%", "*", "+", "-", ".", "/", ":"
                     };
 
-                    if (idx + 9 > temp.length()) break;
                     String codeCntStr = temp.substring(idx, idx += 9);
                     int codeCntInt = Integer.parseInt(codeCntStr, 2);
                     chrCnt += codeCntInt;
 
                     int strBitsLen = (codeCntInt / 2) * 11 + (codeCntInt % 2 > 0 ? 6 : 0);
-                    if (idx + strBitsLen > temp.length()) break;
                     String modeStr = temp.substring(idx, idx += strBitsLen);
 
                     int k;
@@ -72,13 +78,11 @@ public class bj_2680 {
                     }
 
                 } else if (mode.equals("0100")) {
-                    if (idx + 8 > temp.length()) break;
                     String codeCntStr = temp.substring(idx, idx += 8);
                     int codeCntInt = Integer.parseInt(codeCntStr, 2);
                     chrCnt += codeCntInt;
 
                     int strBitsLen = codeCntInt * 8;
-                    if (idx + strBitsLen > temp.length()) break;
                     String modeStr = temp.substring(idx, idx += strBitsLen);
 
                     int k;
@@ -87,17 +91,19 @@ public class bj_2680 {
                         if (tmp > 126 || tmp < 32) {
                             ans.append(String.format("\\%02x", tmp));
                         } else {
-                            ans.append((char) tmp);
+                            if(Character.isDigit((char)tmp)) {
+                                ans.append(String.format("%02x", ((char)tmp)-'0'));
+                            } else {
+                                ans.append((char)tmp);
+                            }
                         }
                     }
                 } else if (mode.equals("1000")) {
-                    if (idx + 8 > temp.length()) break;
                     String codeCntStr = temp.substring(idx, idx += 8);
                     int codeCntInt = Integer.parseInt(codeCntStr, 2);
                     chrCnt += codeCntInt;
 
                     int strBitsLen = codeCntInt * 13;
-                    if (idx + strBitsLen > temp.length()) break;
                     String modeStr = temp.substring(idx, idx += strBitsLen);
 
                     int k;
